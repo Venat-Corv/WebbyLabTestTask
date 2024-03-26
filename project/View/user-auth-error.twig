@@ -1,0 +1,19 @@
+{% include 'header.twig' %}
+{% include 'navbar.twig' %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ errorTitle }}</h5>
+                    <p class="card-text">{{ errorText }}</p>
+                    <a href="/sign/in" class="btn btn-primary">Увійти</a>
+                    <a href="/sign/up" class="btn btn-primary">Зареєструватися</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'footer.twig' %}

@@ -1,0 +1,4 @@
+secret_keys:
+  pass_key: '2DG2<SHTR>LKe8<bgi$v'
+  csrf_key: '5)b$hT0qP4FtJ<B&(41c'
+url: 'http://webby_lab.localhost'

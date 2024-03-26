@@ -1,0 +1,28 @@
+routes:
+  /sign/in:
+    controller: App\Controller\UserController
+    method: SignIn
+  /sign/up:
+    controller: App\Controller\UserController
+    method: SignUp
+  /logout:
+    controller: App\Controller\UserController
+    method: logout
+  /movie/import:
+    controller: App\Controller\MovieController
+    method: import
+  /:
+    controller: App\Controller\MovieController
+    method: index
+  /movie/all:
+    controller: App\Controller\MovieController
+    method: all
+  /movie/info:
+    controller: App\Controller\MovieController
+    method: info
+  /movie/delete:
+    controller: App\Controller\MovieController
+    method: delete
+  /movie/new:
+    controller: App\Controller\MovieController
+    method: new

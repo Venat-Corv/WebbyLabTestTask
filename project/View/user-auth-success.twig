@@ -1,0 +1,28 @@
+{% include 'header.twig' %}
+{% include 'navbar.twig' %}
+
+<div class="container">
+    <div class="row mt-5">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ type }}</h5>
+                    <form method="post">
+                        <input type="hidden" name="csrfKey" value={{ csrfKey }}>
+                        <div class="mb-3">
+                            <label for="login" class="form-label">Логін</label>
+                            <input type="text" class="form-control" id="login" name="login" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Пароль</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">{{ typeButton }}</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'footer.twig' %}

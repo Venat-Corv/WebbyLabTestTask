@@ -1,0 +1,25 @@
+{% include 'header.twig' %}
+{% include 'navbar.twig' %}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">{{ movie.title }}</h5>
+                    <p class="card-text">Рік: {{ movie.releaseYear }}</p>
+                    <p class="card-text">Формат: {{ movie.format }}</p>
+                    <p class="card-text">Актори:</p>
+                    <ul class="list-group">
+                        {% for star in movie.movieStars %}
+                            <li class="list-group-item">{{ star.name }}</li>
+                        {% endfor %}
+                    </ul>
+                    <a href="/movie/all" class="btn btn-primary mt-3">Всі фільми</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'footer.twig' %}

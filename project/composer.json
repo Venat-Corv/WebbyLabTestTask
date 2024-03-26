@@ -1,0 +1,29 @@
+{
+  "type": "project",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "venatcorv",
+      "email": "skylinegvs@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.1",
+    "ext-calendar": "*",
+    "ext-ctype": "*",
+    "ext-iconv": "*",
+    "ext-yaml": "*",
+    "ext-curl": "*",
+    "doctrine/orm": "^3.0",
+    "doctrine/migrations": "^3.0",
+    "symfony/cache": "^5.0",
+    "php-di/php-di": "^7.0",
+    "twig/twig": "^3.0",
+    "php-amqplib/php-amqplib": "3.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "/var/www"
+    }
+  }
+}
