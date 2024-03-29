@@ -51,6 +51,8 @@ class MovieController
             }
             $csrfKey = $_SESSION['csrf']['key'] ?? null;
             $searchValue = $request->getValue('search');
+            $sortField = $request->getValue('sortField');
+            $sortType = $request->getValue('sortType');
             $allMovies = $this->entityManager->createQueryBuilder('Movie m')
                 ->select('m')
                 ->from(Movie::class, 'm')
@@ -58,10 +60,16 @@ class MovieController
                 ->where("m.title LIKE :searchValue")
                 ->orWhere("ms.name LIKE :searchValue")
                 ->setParameter('searchValue', "%$searchValue%")
-                ->orderBy('m.title')
+                ->orderBy("m.$sortField", $sortType)
                 ->getQuery()
                 ->getResult();
-            echo $this->twig->render('movie-all.twig', ['allMovies' => $allMovies, 'csrfKey' => $csrfKey]);
+            echo $this->twig->render('movie-all.twig', [
+                'allMovies' => $allMovies,
+                'csrfKey' => $csrfKey,
+                'sortField' => $sortField,
+                'sortType' => $sortType,
+                'search' => $searchValue
+            ]);
         }
     }
 
@@ -100,16 +108,45 @@ class MovieController
             if(!isset($_SESSION)){
                 session_start();
             }
+            $csrfKey = $_SESSION['csrf']['key'] ?? null;
+            $formats = MovieFormatEnum::getValues();
             $stars = $request->getValue('stars');
             $title = $request->getValue('title');
             $format = $request->getValue('format');
             $releaseYear = $request->getValue('releaseYear');
+            if (trim($title) === '') {
+                echo $this->twig->render('movie-new.twig', [
+                    'formats' => $formats,
+                    'isError' => true,
+                    'Error' => 'Назва фільму не може бути порожньою',
+                    'csrfKey' => $csrfKey
+                ]);
+                exit();
+            }
             $movie = new Movie();
             $movie->setTitle($title);
             $movie->setFormat($format);
             $movie->setReleaseYear($releaseYear);
             $this->entityManager->persist($movie);
             foreach ($stars as $star) {
+                if (trim($star) === '') {
+                    echo $this->twig->render('movie-new.twig', [
+                        'formats' => $formats,
+                        'isError' => true,
+                        'Error' => "Ім'я не може бути порожнім",
+                        'csrfKey' => $csrfKey
+                    ]);
+                    exit();
+                }
+                if (preg_match("/[^a-zA-Zа-яА-ЯїґьЇҐЬ,\- ']/", $star)) {
+                    echo $this->twig->render('movie-new.twig', [
+                        'formats' => $formats,
+                        'isError' => true,
+                        'Error' => "Ім'я $star не відповідає формату. Ім'я може містити в собі тільки Літери, або такі симфоли як -,' та пробіл",
+                        'csrfKey' => $csrfKey
+                    ]);
+                    exit();
+                }
                 $movieStar = new MovieStars();
                 $movieStar->setMovie($movie);
                 $movieStar->setName($star);
@@ -136,10 +173,24 @@ class MovieController
             if(!isset($_SESSION)){
                 session_start();
             }
+            $csrfKey = $_SESSION['csrf']['key'] ?? null;
             $file = $request->getFile('fileUpload');
+            if (!$file['size']) {
+                echo $this->twig->render('movie-import.twig', [
+                    'csrfKey' => $csrfKey, 'isError' => true, 'Error' => "Спочатку оберіть файл"
+                ]);
+                exit();
+            } elseif ($file['type'] !== 'text/plain') {
+                echo $this->twig->render('movie-import.twig', [
+                    'csrfKey' => $csrfKey, 'isError' => true, 'Error' => "Оберіть файл формату .txt"
+                ]);
+                exit();
+            }
             $fileContent = file_get_contents($file['tmp_name']);
-            $moviesInfo = explode("\r\n\r\n\r\n", $fileContent);
+            $trimmedFileContent = preg_replace('/(\r\n){2,}/', "$$$$", $fileContent);
+            $moviesInfo = explode("$$$$", $trimmedFileContent);
             $queueName = 'addMovies';
+            $this->rabbitMQ->queue_purge($queueName);
             $this->rabbitMQ->queue_declare($queueName, false, false, false, false);
             foreach ($moviesInfo as $movieInfo) {
                 $messageBody = $movieInfo;
@@ -161,10 +212,11 @@ class MovieController
                 // Скасування підписки
                 $this->rabbitMQ->basic_cancel($consumerTag);
                 $this->rabbitMQ->close();
-                $csrfKey = $_SESSION['csrf']['key'] ?? null;
-                echo $this->twig->render('movie-import.twig', ['csrfKey' => $csrfKey, 'isSuccess' => true]);
+                echo $this->twig->render('movie-import.twig', ['csrfKey' => $csrfKey, 'isSuccess' => true, 'filmsCount' => count($moviesInfo)]);
             }catch (ErrorException $errorException) {
-                var_dump($errorException->getMessage());
+                echo $this->twig->render('movie-import.twig', [
+                    'csrfKey' => $csrfKey, 'isError' => true, 'Error' => $errorException->getMessage()
+                ]);
             }
         }
     }

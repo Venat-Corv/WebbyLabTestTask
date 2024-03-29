@@ -5,11 +5,26 @@
     <div class="row mb-3">
         <div class="col">
             <form method="post" class="form-inline">
-                <div class="form-group mr-2">
-                    <input type="text" name="search" class="form-control" placeholder="Пошук...">
-                    <input type="hidden" name="csrfKey" value={{ csrfKey }}>
-
-                <button type="submit" class="btn btn-primary mr-2">Знайти</button>
+                <div class="form-row">
+                    <div class="form-group mr-2">
+                        <input type="text" name="search" class="form-control" placeholder="Пошук..." value={{ search }}>
+                        <input type="hidden" name="csrfKey" value={{ csrfKey }}>
+                    </div>
+                    <div class="form-group mr-2">
+                        <label for="sortField" class="mr-2">Сортувати за полем:</label>
+                        <select id="sortField" class="form-control" name="sortField">
+                            <option value="title" {% if not sortField or sortField == 'title' %}selected{% endif %}>Назвою</option>
+                            <option value="releaseYear" {% if sortField == 'releaseYear' %}selected{% endif %}>Роком випуску</option>
+                        </select>
+                    </div>
+                    <div class="form-group mr-2">
+                        <label for="sortType" class="mr-2">Тип сортування:</label>
+                        <select id="sortType" class="form-control" name="sortType">
+                            <option value="asc" {% if not sortType or sortType == 'asc' %}selected{% endif %}>За зростанням</option>
+                            <option value="desc" {% if sortType == 'desc' %}selected{% endif %}>За спаданням</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Показати</button>
                 </div>
             </form>
         </div>
@@ -25,9 +40,15 @@
                         <h5 class="card-title">{{ movie.title }}</h5>
                         <p class="card-text">Рік випуску: {{ movie.releaseYear }}</p>
                         <p class="card-text">Формат: {{ movie.format }}</p>
+                        <p class="card-text">Актори:</p>
+                        <ul class="list-group">
+                            {% for star in movie.movieStars %}
+                                <li class="list-group-item">{{ star.name }}</li>
+                            {% endfor %}
+                        </ul>
                         <div class="d-flex justify-content-end">
                             <a href="/movie/info?id={{ movie.id }}" class="btn btn-success mr-2">Інформація</a>
-                            <a href="/movie/delete?id={{ movie.id }}" class="btn btn-danger">Видалити</a>
+                            <a href="/movie/delete?id={{ movie.id }}" class="btn btn-danger" onclick="return confirm('Ви дійсно хочете видалити цей фільм?')">Видалити</a>
                         </div>
                     </div>
                 </div>

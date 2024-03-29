@@ -33,5 +33,13 @@ try {
 
     echo $response;
 } catch (Exception $e) {
-    var_dump($e->getMessage());
+    session_start();
+    $csrfKey = $_REQUEST['csrfKey'] ?? null;
+    if($_SERVER['REQUEST_URI'] === '/movie/import') {
+        echo $container->get('twig')->render('movie-import.twig', [
+            'csrfKey' => $csrfKey,'isError' => true, 'Error' => $e->getMessage()
+        ]);
+    } else {
+        var_dump($e->getMessage());
+    }
 }

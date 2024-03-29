@@ -5,7 +5,14 @@
     {% if isSuccess %}
         <div class="container mt-4">
             <div class="alert alert-success" role="alert">
-                Імпорт даних пройшов успішно!
+                Імпорт даних пройшов успішно! Нових фільмів - {{ filmsCount }} шт.
+            </div>
+        </div>
+    {% endif %}
+    {% if isError %}
+        <div class="container mt-4">
+            <div class="alert alert-danger" role="alert">
+                {{ Error }}
             </div>
         </div>
     {% endif %}
@@ -13,7 +20,7 @@
         <input type="hidden" name="csrfKey" value={{ csrfKey }}>
         <div class="mb-3">
             <label for="fileUpload" class="form-label">Оберіть файл для імпорту:</label>
-            <input type="file" class="form-control" id="fileUpload" name="fileUpload">
+            <input type="file" class="form-control" id="fileUpload" name="fileUpload" accept=".txt">
         </div>
         <button type="submit" class="btn btn-primary">Завантажити</button>
     </form>
